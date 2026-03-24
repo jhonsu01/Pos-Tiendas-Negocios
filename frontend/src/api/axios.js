@@ -1,8 +1,19 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// Usa la variable de entorno si existe, sino usa localhost
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Auto-detectar URL del backend basándose en el hostname actual
+// Esto permite que funcione tanto en localhost como desde la red local
+const getBaseURL = () => {
+    // Si hay variable de entorno explícita, usarla
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+    // Auto-detectar: usar el mismo hostname desde donde se accede al frontend
+    const hostname = window.location.hostname;
+    return `http://${hostname}:5000/api`;
+};
+
+const baseURL = getBaseURL();
 
 const api = axios.create({
     baseURL: baseURL,
