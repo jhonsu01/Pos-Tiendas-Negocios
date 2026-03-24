@@ -1,3 +1,4 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jhonsu01/Pos-Tiendas-Negocios)
 # ECOTIENDA - Sistema POS
 
 Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas registradoras, proveedores y respaldos.
@@ -23,7 +24,6 @@ Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas regi
 - Node.js >= 18
 - npm
 
-> **Ya no requiere MongoDB.** La base de datos SQLite se crea automaticamente.
 
 ---
 
@@ -31,7 +31,7 @@ Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas regi
 
 1. Clonar el repositorio:
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/jhonsu01/Pos-Tiendas-Negocios
    cd Pos-Tiendas-Negocios
    ```
 
@@ -231,7 +231,6 @@ Al ejecutar `npm run seed`:
 
 | Usuario | Contrasena | Rol |
 |---------|------------|-----|
-| admin | admin | Admin |
 | jose | 1234 | Admin |
 
 **Cambia las contrasenas** despues del primer inicio.
