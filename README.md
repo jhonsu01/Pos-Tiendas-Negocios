@@ -24,7 +24,6 @@ Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas regi
 - Node.js >= 18
 - npm
 
-> **Ya no requiere MongoDB.** La base de datos SQLite se crea automaticamente.
 
 ---
 
