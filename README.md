@@ -231,7 +231,6 @@ Al ejecutar `npm run seed`:
 
 | Usuario | Contrasena | Rol |
 |---------|------------|-----|
-| admin | admin | Admin |
 | jose | 1234 | Admin |
 
 **Cambia las contrasenas** despues del primer inicio.
