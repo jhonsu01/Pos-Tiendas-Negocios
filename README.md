@@ -31,7 +31,7 @@ Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas regi
 
 1. Clonar el repositorio:
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/jhonsu01/Pos-Tiendas-Negocios
    cd Pos-Tiendas-Negocios
    ```
 
