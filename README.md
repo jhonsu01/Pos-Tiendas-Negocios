@@ -1,3 +1,4 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jhonsu01/Pos-Tiendas-Negocios)
 # ECOTIENDA - Sistema POS
 
 Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas registradoras, proveedores y respaldos.
