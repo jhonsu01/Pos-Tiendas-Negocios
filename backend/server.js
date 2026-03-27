@@ -4,8 +4,14 @@ const cors = require('cors');
 const path = require('path');
 const os = require('os');
 
+// Configurar zona horaria para Bogotá (America/Bogota = UTC-5)
+process.env.TZ = 'America/Bogota';
+
 // Load env vars
 dotenv.config();
+
+// Log zona horaria configurada
+console.log('✓ Zona horaria configurada:', process.env.TZ, '(UTC-5)');
 
 // Initialize SQLite database (schema auto-created)
 require('./database/connection');

@@ -2,6 +2,33 @@ const Register = require('../models/Register');
 const Sale = require('../models/Sale');
 const CashClosure = require('../models/CashClosure');
 
+// Helper para convertir fecha a formato de Bogotá para queries
+const getBogotaDateRange = (dateStr) => {
+    const [year, month, day] = dateStr.split('-');
+    // Crear fecha en UTC-5 (Bogotá)
+    const startDate = `${year}-${month}-${day} 00:00:00`;
+    // Usar el inicio del día siguiente para incluir todas las ventas del día actual
+    const currentDate = new Date(year, month - 1, day);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    const nextYear = nextDate.getFullYear();
+    const nextMonth = String(nextDate.getMonth() + 1).padStart(2, '0');
+    const nextDay = String(nextDate.getDate()).padStart(2, '0');
+    const endDate = `${nextYear}-${nextMonth}-${nextDay} 00:00:00`;
+    return { startDate, endDate };
+};
+
+// Helper para obtener fecha actual de Bogotá en formato YYYY-MM-DD
+const getBogotaToday = () => {
+    const now = new Date();
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const bogotaTime = new Date(utcTime - (5 * 3600000));
+    const year = bogotaTime.getFullYear();
+    const month = String(bogotaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(bogotaTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 // @desc    Get all registers
 // @route   GET /api/registers
 // @access  Private
@@ -74,23 +101,10 @@ const deleteRegister = (req, res) => {
 const getRegisterSummary = (req, res) => {
     try {
         const { date } = req.query;
+        const targetDate = date || getBogotaToday();
+        const { startDate, endDate } = getBogotaDateRange(targetDate);
 
-        let targetDate;
-        if (date) {
-            const [year, month, day] = date.split('-');
-            targetDate = new Date(year, month - 1, day, 0, 0, 0, 0);
-        } else {
-            targetDate = new Date();
-            targetDate.setHours(0, 0, 0, 0);
-        }
-
-        const nextDay = new Date(targetDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-
-        const startStr = targetDate.toISOString();
-        const endStr = nextDay.toISOString();
-
-        const sales = Sale.findByRegisterAndDateRange(req.params.id, startStr, endStr);
+        const sales = Sale.findByRegisterAndDateRange(req.params.id, startDate, endDate);
 
         const totalSales = sales.reduce((sum, sale) => sum + sale.totalAmount, 0);
         const salesCount = sales.length;
@@ -99,7 +113,7 @@ const getRegisterSummary = (req, res) => {
             totalSales,
             salesCount,
             sales,
-            date: date || targetDate.toISOString().split('T')[0],
+            date: targetDate,
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -112,23 +126,10 @@ const getRegisterSummary = (req, res) => {
 const closeCashRegister = (req, res) => {
     try {
         const { openingBalance, closingBalance, notes, date } = req.body;
+        const targetDate = date || getBogotaToday();
+        const { startDate, endDate } = getBogotaDateRange(targetDate);
 
-        let targetDate;
-        if (date) {
-            const [year, month, day] = date.split('-');
-            targetDate = new Date(year, month - 1, day, 0, 0, 0, 0);
-        } else {
-            targetDate = new Date();
-            targetDate.setHours(0, 0, 0, 0);
-        }
-
-        const nextDay = new Date(targetDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-
-        const startStr = targetDate.toISOString();
-        const endStr = nextDay.toISOString();
-
-        const sales = Sale.findByRegisterAndDateRange(req.params.id, startStr, endStr);
+        const sales = Sale.findByRegisterAndDateRange(req.params.id, startDate, endDate);
 
         const totalSales = sales.reduce((sum, sale) => sum + sale.totalAmount, 0);
         const salesCount = sales.length;
@@ -173,14 +174,12 @@ const getAllClosures = (req, res) => {
         if (registerId) filters.registerId = registerId;
 
         if (startDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0);
-            filters.startDate = start.toISOString();
+            const { startDate: start } = getBogotaDateRange(startDate);
+            filters.startDate = start;
         }
         if (endDate) {
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            filters.endDate = end.toISOString();
+            const { endDate: end } = getBogotaDateRange(endDate);
+            filters.endDate = end;
         }
 
         const closures = CashClosure.findAllWithFilters(filters);

@@ -1,4 +1,3 @@
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jhonsu01/Pos-Tiendas-Negocios)
 # ECOTIENDA - Sistema POS
 
 Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas registradoras, proveedores y respaldos.
@@ -24,6 +23,7 @@ Sistema de Punto de Venta completo con gestion de inventario, ventas, cajas regi
 - Node.js >= 18
 - npm
 
+> **Ya no requiere MongoDB.** La base de datos SQLite se crea automaticamente.
 
 ---
 
@@ -231,6 +231,7 @@ Al ejecutar `npm run seed`:
 
 | Usuario | Contrasena | Rol |
 |---------|------------|-----|
+| admin | admin | Admin |
 | jose | 1234 | Admin |
 
 **Cambia las contrasenas** despues del primer inicio.

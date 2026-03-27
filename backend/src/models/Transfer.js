@@ -14,7 +14,7 @@ class Transfer {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO transfers (customer_name, user_id, total_amount, status, created_at, updated_at)
-            VALUES (@customer_name, @user_id, @total_amount, 'pending', datetime('now'), datetime('now'))
+            VALUES (@customer_name, @user_id, @total_amount, 'pending', datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -47,7 +47,7 @@ class Transfer {
 
     static markPaid(id) {
         db.prepare(`
-            UPDATE transfers SET status = 'paid', paid_at = datetime('now'), updated_at = datetime('now')
+            UPDATE transfers SET status = 'paid', paid_at = datetime('now', 'localtime'), updated_at = datetime('now', 'localtime')
             WHERE id = ?
         `).run(id);
         return Transfer.findById(id);

@@ -85,47 +85,73 @@ const PosPage = () => {
 
         setLoading(true);
         try {
-            let assignedRegister = null;
+            // Agrupar items por caja según su categoría
+            const salesByRegister = {};
 
-            const cartCategories = [...new Set(cartItems.map(item => {
+            for (const item of cartItems) {
                 const product = products.find(p => p._id === item.product);
-                return product?.category;
-            }).filter(Boolean))];
+                if (!product) continue;
 
-            for (const reg of registers) {
-                if (reg.categories && reg.categories.length > 0) {
-                    const hasMatchingCategory = cartCategories.some(cat =>
-                        reg.categories.includes(cat)
-                    );
-                    if (hasMatchingCategory) {
-                        assignedRegister = reg._id;
+                const category = product.category;
+                let assignedRegisterId = null;
+
+                // Buscar la caja que corresponde a esta categoría
+                for (const reg of registers) {
+                    if (reg.categories && reg.categories.includes(category)) {
+                        assignedRegisterId = reg._id;
                         break;
                     }
                 }
+
+                // Si no se encontró caja específica, usar la seleccionada o la primera
+                if (!assignedRegisterId) {
+                    assignedRegisterId = selectedRegister || (registers.length > 0 ? registers[0]._id : null);
+                }
+
+                // Crear entrada para esta caja si no existe
+                if (!salesByRegister[assignedRegisterId]) {
+                    salesByRegister[assignedRegisterId] = {
+                        register: assignedRegisterId,
+                        items: [],
+                        totalAmount: 0
+                    };
+                }
+
+                // Agregar item a esta caja
+                salesByRegister[assignedRegisterId].items.push(item);
+                salesByRegister[assignedRegisterId].totalAmount += item.price * item.qty;
             }
 
-            if (!assignedRegister) {
-                assignedRegister = selectedRegister || (registers.length > 0 ? registers[0]._id : null);
-            }
-
-            if (!assignedRegister) {
+            if (Object.keys(salesByRegister).length === 0) {
                 alert('No hay cajas disponibles. Por favor crea una caja primero.');
                 setLoading(false);
                 return;
             }
 
-            await api.post('/sales', {
-                items: cartItems,
-                totalAmount,
-                paymentMethod: 'Cash',
-                register: assignedRegister,
-            });
+            // Crear una venta por cada caja
+            const salesPromises = Object.values(salesByRegister).map(saleData =>
+                api.post('/sales', {
+                    items: saleData.items,
+                    totalAmount: saleData.totalAmount,
+                    paymentMethod: 'Cash',
+                    register: saleData.register,
+                })
+            );
+
+            await Promise.all(salesPromises);
+
             clearCart();
             setAmountPaid('');
-            alert('Sale completed successfully!');
+
+            // Mostrar mensaje de éxito con detalle de cajas
+            const registerCount = Object.keys(salesByRegister).length;
+            const message = registerCount > 1
+                ? `Venta completada exitosamente en ${registerCount} cajas`
+                : 'Venta completada exitosamente';
+            alert(message);
         } catch (error) {
             console.error('Error processing sale:', error);
-            alert('Failed to process sale');
+            alert('Error al procesar la venta');
         } finally {
             setLoading(false);
         }

@@ -409,7 +409,7 @@ const SuppliersPage = () => {
                                                 </div>
                                                 <div className="text-right flex-shrink-0 ml-4">
                                                     <p className="text-xs text-gray-500">
-                                                        {new Date(payment.paymentDate).toLocaleDateString('es-ES')}
+                                                        {new Date(payment.paymentDate).toLocaleDateString('es-CO')}
                                                     </p>
                                                     <p className="text-xs text-gray-400">
                                                         {payment.user?.name}

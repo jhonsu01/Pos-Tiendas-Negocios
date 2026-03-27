@@ -63,7 +63,7 @@ const LicenseExpiredLoginPage = () => {
                         <span className="text-sm font-semibold">Fecha de Expiración</span>
                     </div>
                     <p className="text-2xl font-bold text-red-400">
-                        {licenseExpiresAt ? new Date(licenseExpiresAt).toLocaleDateString('es-ES', {
+                        {licenseExpiresAt ? new Date(licenseExpiresAt).toLocaleDateString('es-CO', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'

@@ -180,7 +180,7 @@ const SalesHistoryPage = () => {
                         {filteredSales.map((sale) => (
                             <tr key={sale._id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {new Date(sale.createdAt).toLocaleString('es-ES')}
+                                    {new Date(sale.createdAt).toLocaleString('es-CO')}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {sale.user?.name || 'Desconocido'}
@@ -236,10 +236,10 @@ const SalesHistoryPage = () => {
                             <div className="flex-1">
                                 <p className="text-xs text-gray-500 mb-1">Fecha</p>
                                 <p className="text-sm font-semibold text-gray-900">
-                                    {new Date(sale.createdAt).toLocaleDateString('es-ES')}
+                                    {new Date(sale.createdAt).toLocaleDateString('es-CO')}
                                 </p>
                                 <p className="text-xs text-gray-600">
-                                    {new Date(sale.createdAt).toLocaleTimeString('es-ES')}
+                                    {new Date(sale.createdAt).toLocaleTimeString('es-CO')}
                                 </p>
                             </div>
                             <div className="text-right">

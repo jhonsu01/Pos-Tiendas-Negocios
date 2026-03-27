@@ -27,7 +27,7 @@ class Category {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO categories (name, description, default_track_stock, default_variable_price, is_active, created_at, updated_at)
-            VALUES (@name, @description, @default_track_stock, @default_variable_price, 1, datetime('now'), datetime('now'))
+            VALUES (@name, @description, @default_track_stock, @default_variable_price, 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -50,7 +50,7 @@ class Category {
                 default_track_stock = @default_track_stock,
                 default_variable_price = @default_variable_price,
                 is_active = @is_active,
-                updated_at = datetime('now')
+                updated_at = datetime('now', 'localtime')
             WHERE id = @id
         `).run({
             id,

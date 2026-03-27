@@ -9,7 +9,7 @@ class Settings {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO settings (store_name, store_logo, logo_size, created_at, updated_at)
-            VALUES (@store_name, @store_logo, @logo_size, datetime('now'), datetime('now'))
+            VALUES (@store_name, @store_logo, @logo_size, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -30,7 +30,7 @@ class Settings {
                     store_name = @store_name,
                     store_logo = @store_logo,
                     logo_size = @logo_size,
-                    updated_at = datetime('now')
+                    updated_at = datetime('now', 'localtime')
                 WHERE id = @id
             `).run({
                 id: existing.id,

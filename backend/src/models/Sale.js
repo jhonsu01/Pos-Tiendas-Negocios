@@ -1,5 +1,23 @@
 const db = require('../../database/connection');
 
+// Helper para obtener fecha actual en zona horaria de Bogotá (UTC-5)
+const getBogotaDateTime = () => {
+    const now = new Date();
+    // Obtener hora UTC y restar 5 horas para Bogotá
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const bogotaTime = new Date(utcTime - (5 * 3600000)); // -5 horas
+
+    // Formatear como YYYY-MM-DD HH:MM:SS
+    const year = bogotaTime.getFullYear();
+    const month = String(bogotaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(bogotaTime.getDate()).padStart(2, '0');
+    const hours = String(bogotaTime.getHours()).padStart(2, '0');
+    const minutes = String(bogotaTime.getMinutes()).padStart(2, '0');
+    const seconds = String(bogotaTime.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 class Sale {
     static findAll(options = {}) {
         let query = `
@@ -24,18 +42,21 @@ class Sale {
 
     static findByRegisterAndDateRange(registerId, startDate, endDate) {
         // Include sales for this register OR sales with no register
+        // Usar <= para incluir ventas creadas exactamente en el endTime
         const rows = db.prepare(`
             SELECT * FROM sales
             WHERE (register_id = ? OR register_id IS NULL)
-            AND created_at >= ? AND created_at < ?
+            AND created_at >= ? AND created_at <= ?
         `).all(registerId, startDate, endDate);
         return rows.map(Sale._formatRow);
     }
 
     static create(data) {
+        const now = getBogotaDateTime();
+
         const insertSale = db.prepare(`
             INSERT INTO sales (register_id, user_id, total_amount, payment_method, is_transfer_payment, created_at, updated_at)
-            VALUES (@register_id, @user_id, @total_amount, @payment_method, @is_transfer_payment, datetime('now'), datetime('now'))
+            VALUES (@register_id, @user_id, @total_amount, @payment_method, @is_transfer_payment, @created_at, @updated_at)
         `);
 
         const insertItem = db.prepare(`
@@ -49,6 +70,8 @@ class Sale {
             total_amount: data.totalAmount,
             payment_method: data.paymentMethod || 'Cash',
             is_transfer_payment: data.isTransferPayment ? 1 : 0,
+            created_at: now,
+            updated_at: now,
         });
 
         const saleId = result.lastInsertRowid;
@@ -80,7 +103,8 @@ class Sale {
 
         if (data.totalAmount !== undefined) { fields.push('total_amount = @total_amount'); values.total_amount = data.totalAmount; }
         if (data.paymentMethod !== undefined) { fields.push('payment_method = @payment_method'); values.payment_method = data.paymentMethod; }
-        fields.push("updated_at = datetime('now')");
+        fields.push('updated_at = @updated_at');
+        values.updated_at = getBogotaDateTime();
 
         if (fields.length > 0) {
             db.prepare(`UPDATE sales SET ${fields.join(', ')} WHERE id = @id`).run(values);

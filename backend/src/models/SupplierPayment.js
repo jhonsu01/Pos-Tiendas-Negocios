@@ -45,7 +45,7 @@ class SupplierPayment {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO supplier_payments (supplier_id, register_id, user_id, amount, description, payment_date, created_at, updated_at)
-            VALUES (@supplier_id, @register_id, @user_id, @amount, @description, @payment_date, datetime('now'), datetime('now'))
+            VALUES (@supplier_id, @register_id, @user_id, @amount, @description, @payment_date, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -86,7 +86,7 @@ class SupplierPayment {
         db.prepare(`
             UPDATE supplier_payments SET
                 amount = @amount, description = @description,
-                register_id = @register_id, updated_at = datetime('now')
+                register_id = @register_id, updated_at = datetime('now', 'localtime')
             WHERE id = @id
         `).run({
             id,

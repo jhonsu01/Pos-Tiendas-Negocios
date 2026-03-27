@@ -101,7 +101,7 @@ const BackupPage = () => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleString('es-ES', {
+        return date.toLocaleString('es-CO', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

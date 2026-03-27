@@ -119,7 +119,7 @@ const AccumulatedPage = () => {
                             {item.lastClosure && (
                                 <div className="flex items-center text-xs text-gray-500 mt-2">
                                     <Calendar className="w-3 h-3 mr-1" />
-                                    Último cierre: {new Date(item.lastClosure).toLocaleDateString('es-ES')}
+                                    Último cierre: {new Date(item.lastClosure).toLocaleDateString('es-CO')}
                                 </div>
                             )}
 

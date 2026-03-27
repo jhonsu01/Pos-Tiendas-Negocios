@@ -1,5 +1,31 @@
 const db = require('../../database/connection');
 
+// Helper para obtener fecha actual en zona horaria de Bogotá (UTC-5)
+const getBogotaDateTime = () => {
+    const now = new Date();
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const bogotaTime = new Date(utcTime - (5 * 3600000));
+
+    const year = bogotaTime.getFullYear();
+    const month = String(bogotaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(bogotaTime.getDate()).padStart(2, '0');
+    const hours = String(bogotaTime.getHours()).padStart(2, '0');
+    const minutes = String(bogotaTime.getMinutes()).padStart(2, '0');
+    const seconds = String(bogotaTime.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+// Helper para convertir fecha string (YYYY-MM-DD) a formato SQLite
+const formatClosedAtDate = (dateStr) => {
+    if (!dateStr) return getBogotaDateTime();
+    // Si viene en formato YYYY-MM-DD, convertir a YYYY-MM-DD HH:MM:SS
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return `${dateStr} 23:59:59`;
+    }
+    return dateStr;
+};
+
 class CashClosure {
     static findById(id) {
         const row = db.prepare('SELECT * FROM cash_closures WHERE id = ?').get(id);
@@ -58,9 +84,12 @@ class CashClosure {
     }
 
     static create(data) {
+        const now = getBogotaDateTime();
+        const closedAt = formatClosedAtDate(data.closedAt);
+
         const stmt = db.prepare(`
             INSERT INTO cash_closures (register_id, user_id, opening_balance, closing_balance, total_sales, sales_count, notes, closed_at, created_at, updated_at)
-            VALUES (@register_id, @user_id, @opening_balance, @closing_balance, @total_sales, @sales_count, @notes, @closed_at, datetime('now'), datetime('now'))
+            VALUES (@register_id, @user_id, @opening_balance, @closing_balance, @total_sales, @sales_count, @notes, @closed_at, @created_at, @updated_at)
         `);
 
         const result = stmt.run({
@@ -71,7 +100,9 @@ class CashClosure {
             total_sales: data.totalSales,
             sales_count: data.salesCount,
             notes: data.notes || null,
-            closed_at: data.closedAt instanceof Date ? data.closedAt.toISOString() : (data.closedAt || new Date().toISOString()),
+            closed_at: closedAt,
+            created_at: now,
+            updated_at: now,
         });
 
         return CashClosure.findById(result.lastInsertRowid);
@@ -86,13 +117,14 @@ class CashClosure {
                 opening_balance = @opening_balance,
                 closing_balance = @closing_balance,
                 notes = @notes,
-                updated_at = datetime('now')
+                updated_at = @updated_at
             WHERE id = @id
         `).run({
             id,
             opening_balance: data.openingBalance !== undefined ? data.openingBalance : closure.openingBalance,
             closing_balance: data.closingBalance !== undefined ? data.closingBalance : closure.closingBalance,
             notes: data.notes !== undefined ? data.notes : closure.notes,
+            updated_at: getBogotaDateTime(),
         });
 
         return CashClosure.findById(id);

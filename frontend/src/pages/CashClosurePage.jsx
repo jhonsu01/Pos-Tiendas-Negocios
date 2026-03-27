@@ -456,7 +456,7 @@ const CashClosurePage = () => {
                                 return (
                                     <tr key={closure._id} className={hasDifference ? 'bg-red-50' : ''}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {new Date(closure.closedAt).toLocaleDateString('es-ES')}
+                                            {new Date(closure.closedAt).toLocaleDateString('es-CO')}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {closure.register?.name || 'N/A'}

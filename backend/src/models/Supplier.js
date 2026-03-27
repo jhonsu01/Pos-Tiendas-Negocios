@@ -14,7 +14,7 @@ class Supplier {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO suppliers (name, contact, phone, email, address, notes, is_active, created_at, updated_at)
-            VALUES (@name, @contact, @phone, @email, @address, @notes, 1, datetime('now'), datetime('now'))
+            VALUES (@name, @contact, @phone, @email, @address, @notes, 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -37,7 +37,7 @@ class Supplier {
             UPDATE suppliers SET
                 name = @name, contact = @contact, phone = @phone,
                 email = @email, address = @address, notes = @notes,
-                is_active = @is_active, updated_at = datetime('now')
+                is_active = @is_active, updated_at = datetime('now', 'localtime')
             WHERE id = @id
         `).run({
             id,

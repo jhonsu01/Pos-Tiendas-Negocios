@@ -29,7 +29,7 @@ class Product {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO products (name, sku, price, stock, category, track_stock, variable_price, image, emoji, position, created_at, updated_at)
-            VALUES (@name, @sku, @price, @stock, @category, @track_stock, @variable_price, @image, @emoji, @position, datetime('now'), datetime('now'))
+            VALUES (@name, @sku, @price, @stock, @category, @track_stock, @variable_price, @image, @emoji, @position, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -58,7 +58,7 @@ class Product {
                 category = @category, track_stock = @track_stock,
                 variable_price = @variable_price, image = @image,
                 emoji = @emoji, position = @position,
-                updated_at = datetime('now')
+                updated_at = datetime('now', 'localtime')
             WHERE id = @id
         `);
 

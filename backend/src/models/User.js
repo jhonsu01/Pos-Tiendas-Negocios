@@ -32,7 +32,7 @@ class User {
 
         const stmt = db.prepare(`
             INSERT INTO users (name, username, password, role, license_expires_at, created_at, updated_at)
-            VALUES (@name, @username, @password, @role, @license_expires_at, datetime('now'), datetime('now'))
+            VALUES (@name, @username, @password, @role, @license_expires_at, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -61,7 +61,7 @@ class User {
         }
 
         db.prepare(`
-            UPDATE users SET name = ?, username = ?, password = ?, role = ?, updated_at = datetime('now')
+            UPDATE users SET name = ?, username = ?, password = ?, role = ?, updated_at = datetime('now', 'localtime')
             WHERE id = ?
         `).run(name, username, password, role, id);
 

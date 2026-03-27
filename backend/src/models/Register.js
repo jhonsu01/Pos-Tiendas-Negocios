@@ -28,7 +28,7 @@ class Register {
     static create(data) {
         const stmt = db.prepare(`
             INSERT INTO registers (name, description, is_active, created_at, updated_at)
-            VALUES (@name, @description, @is_active, datetime('now'), datetime('now'))
+            VALUES (@name, @description, @is_active, datetime('now', 'localtime'), datetime('now', 'localtime'))
         `);
 
         const result = stmt.run({
@@ -57,7 +57,7 @@ class Register {
         db.prepare(`
             UPDATE registers SET
                 name = @name, description = @description, is_active = @is_active,
-                updated_at = datetime('now')
+                updated_at = datetime('now', 'localtime')
             WHERE id = @id
         `).run({
             id,
