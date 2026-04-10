@@ -1,0 +1,14 @@
+{
+  "name": "pos-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server para sistema POS - Gestión de ventas, productos e inventario",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "node-fetch": "^3.3.2"
+  }
+}
